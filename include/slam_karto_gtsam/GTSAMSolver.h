@@ -76,17 +76,6 @@ class GTSAMSolver : public karto::ScanSolver
      */
     void getGraph(std::vector<Eigen::Vector2d> &nodes, std::vector<std::pair<Eigen::Vector2d, Eigen::Vector2d> > &edges);
 
-    /**
-    * @brief Use robust kernel in back-end
-    * @details Uses Dynamic Covariance scaling kernel in back-end
-    * 
-    * @param flag variable, if true robust kernel will be used
-    */
-    void useRobustKernel(bool flag)
-    {
-        useRobustKernel_ = flag;
-    }
-
   private:
     
     karto::ScanSolver::IdPoseVector corrections_;
@@ -94,6 +83,8 @@ class GTSAMSolver : public karto::ScanSolver
     gtsam::NonlinearFactorGraph graph_;
 
     gtsam::Values initialGuess_;
+
+    std::vector<Eigen::Vector2d> graphNodes_;
 
 };
 

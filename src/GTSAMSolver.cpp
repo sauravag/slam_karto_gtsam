@@ -44,13 +44,15 @@ void GTSAMSolver::Compute()
 
   corrections_.clear();
 
-  GaussNewtonParams parameters;
+  graphNodes_.clear();
+
+  LevenbergMarquardtParams parameters;
 
   // Stop iterating once the change in error between steps is less than this value
   parameters.relativeErrorTol = 1e-5;
   
   // Do not perform more than N iteration steps
-  parameters.maxIterations = 100;
+  parameters.maxIterations = 500;
   
   // Create the optimizer ...
   LevenbergMarquardtOptimizer optimizer(graph_, initialGuess_, parameters);
@@ -58,7 +60,20 @@ void GTSAMSolver::Compute()
   // ... and optimize
   Values result = optimizer.optimize();
 
-  // TODO: Put values in corrections
+  Values::ConstFiltered<Pose2> viewPose2 = result.filter<Pose2>();
+  
+  // put values into corrections container
+  for(const Values::ConstFiltered<Pose2>::KeyValuePair& key_value: viewPose2) 
+  {
+
+    karto::Pose2 pose(key_value.value.x(), key_value.value.y(), key_value.value.theta());
+    
+    corrections_.push_back(std::make_pair(key_value.key, pose));
+
+    graphNodes_.push_back(Eigen::Vector2d(key_value.value.x(), key_value.value.y()));
+
+  }
+
 }
 
 void GTSAMSolver::AddNode(karto::Vertex<karto::LocalizedRangeScan>* pVertex)
@@ -70,6 +85,8 @@ void GTSAMSolver::AddNode(karto::Vertex<karto::LocalizedRangeScan>* pVertex)
   
   initialGuess_.insert(pVertex->GetObject()->GetUniqueId(), 
                         Pose2( odom.GetX(), odom.GetY(), odom.GetHeading() ));
+
+  graphNodes_.push_back(Eigen::Vector2d(odom.GetX(), odom.GetY()));
   
   ROS_DEBUG("[gtsam] Adding node %d.", pVertex->GetObject()->GetUniqueId());
 
@@ -91,7 +108,7 @@ void GTSAMSolver::AddConstraint(karto::Edge<karto::LocalizedRangeScan>* pEdge)
   karto::Pose2 diff = pLinkInfo->GetPoseDifference();
   
   // Set the covariance of the measurement
-  karto::Matrix3 precisionMatrix = pLinkInfo->GetCovariance()
+  karto::Matrix3 precisionMatrix = pLinkInfo->GetCovariance();
   
   Eigen::Matrix<double,3,3> cov;
   
@@ -107,7 +124,7 @@ void GTSAMSolver::AddConstraint(karto::Edge<karto::LocalizedRangeScan>* pEdge)
   
   cov(2,2) = precisionMatrix(2,2);
   
-  noiseModel::Diagonal::shared_ptr model = noiseModel::Diagonal::Sigmas(Vector3(0.2, 0.2, 0.1));
+  noiseModel::Gaussian::shared_ptr model = noiseModel::Diagonal::Covariance(cov);
 
   // Add odometry factors
   // Create odometry (Between) factors between consecutive poses
@@ -122,32 +139,11 @@ void GTSAMSolver::getGraph(std::vector<Eigen::Vector2d> &nodes, std::vector<std:
 {
   using namespace gtsam;
 
-  //HyperGraph::VertexIDMap vertexMap = optimizer_.vertices();
+  nodes = graphNodes_;
 
-  //HyperGraph::EdgeSet edgeSet = optimizer_.edges();
+  // double *data1 = new double[3];
 
-  double *data = new double[3];
-
-  for (SparseOptimizer::VertexIDMap::iterator it = optimizer_.vertices().begin(); it != optimizer_.vertices().end(); ++it) 
-  {
-
-    VertexSE2* v = dynamic_cast<VertexSE2*>(it->second);
-    
-    if(v) 
-    {
-      
-      v->getEstimateData(data);
-
-      Eigen::Vector2d pose(data[0], data[1]);
-
-      nodes.push_back(pose);
-
-    }
-  }
-
-  double *data1 = new double[3];
-
-  double *data2 = new double[3];
+  // double *data2 = new double[3];
 
   // for (SparseOptimizer::EdgeSet::iterator it = optimizer_.edges().begin(); it != optimizer_.edges().end(); ++it) 
   // {
@@ -175,10 +171,8 @@ void GTSAMSolver::getGraph(std::vector<Eigen::Vector2d> &nodes, std::vector<std:
 
   // }
 
-  delete data;
+  // delete data1;
 
-  delete data1;
-
-  delete data2;
+  // delete data2;
 
 }
