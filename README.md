@@ -3,7 +3,7 @@ Pose-graph SLAM with Open Karto as Front-end and GTSAM as Backend
 
 # Notes
 
-The optimization routine used is Levenberg-Marquadt provided by g2o, you can easily change it to something else (Powell's dog leg etc.). This package is currently tested with Ubuntu 16.04 LTS + ROS Kinetic
+The optimization routine used is Levenberg-Marquadt provided by gtsam, you can easily change it to something else (Powell's dog leg etc.). This package is currently tested with Ubuntu 16.04 LTS + ROS Kinetic
 
 # How-To Use
 
