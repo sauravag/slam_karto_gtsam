@@ -19,4 +19,4 @@ Use the given launch files. The build_map_w_params launch files uses a given par
 
 # Support
 
-Head on over to my blog post http://sauravag.com/2017/07/an-practical-introduction-to-pose-graph-slam/ where you can ask questions and I will try to respond in a timely manner.
+Head on over to my blog post http://sauravag.com/2017/07/an-practical-introduction-to-pose-graph-slam/ where you can ask questions.
