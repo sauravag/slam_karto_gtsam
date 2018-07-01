@@ -165,10 +165,6 @@ SlamKarto::SlamKarto() :
   dataset_ = new karto::Dataset();
 
   // Setting General Parameters from the Parameter Server
-  bool do_loop_closing_without_scan_matching;
-  if(private_nh_.getParam("do_loop_closing_without_scan_matching", do_loop_closing_without_scan_matching))
-    mapper_->setParamDoLoopClosingWithoutScanMatching(do_loop_closing_without_scan_matching);
-  
   bool use_scan_matching;
   if(private_nh_.getParam("use_scan_matching", use_scan_matching))
     mapper_->setParamUseScanMatching(use_scan_matching);
