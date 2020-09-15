@@ -1,0 +1,13 @@
+<launch>
+  <param name="/use_sim_time" value="true"/>
+
+  <node pkg="slam_karto_gtsam" type="slam_karto_gtsam" name="slam_karto_gtsam" output="screen">
+    <remap from="scan" to="scan_1"/>
+    <param name="odom_frame" value="odom"/>
+    <param name="map_update_interval" value="1"/>
+    <param name="resolution" value="0.05"/>
+  </node>
+
+  <node name="rviz" pkg="rviz" type="rviz" required="true"
+    args="-d $(find slam_karto_gtsam)/config/slam_karto.rviz"/>
+</launch>
