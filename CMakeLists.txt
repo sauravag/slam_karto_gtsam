@@ -18,7 +18,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
 
-find_package(MKL REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(GTSAM REQUIRED)
@@ -27,7 +26,6 @@ include_directories(
     include/${PROJECT_NAME}
     ${catkin_INCLUDE_DIRS} 
     ${EIGEN_INCLUDE_DIRS}
-    ${MKL_INCLUDE_DIR}
     ${GTSAM_INCLUDE_DIRS}
 )
 

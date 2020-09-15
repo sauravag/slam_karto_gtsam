@@ -739,7 +739,7 @@ SlamKarto::mapCallback(nav_msgs::GetMap::Request  &req,
 int
 main(int argc, char** argv)
 {
-  ros::init(argc, argv, "slam_karto_g2o");
+  ros::init(argc, argv, "slam_karto_gtsam");
 
   SlamKarto kn;
 
